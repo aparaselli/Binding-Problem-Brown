@@ -18,9 +18,6 @@ from search_utils import (
     get_prompt,
 )
 
-# ==================================================
-# CONFIG
-# ==================================================
 
 DATASET_DIR = (
     "/oscar/data/epavlick/aparasel/"
@@ -30,9 +27,6 @@ DATASET_DIR = (
 
 torch.set_grad_enabled(False)
 
-# ==================================================
-# HELPERS
-# ==================================================
 
 def parse_filename(filename):
 
@@ -325,9 +319,6 @@ def run_same_image_backpatch(
     if positions.numel() == 0:
         raise ValueError("No visual positions found.")
 
-    # --------------------------
-    # Original generation
-    # --------------------------
 
     original_response = generate_from_inputs(
         model=model,
@@ -336,9 +327,6 @@ def run_same_image_backpatch(
         max_new_tokens=max_new_tokens,
     )
 
-    # --------------------------
-    # Source capture pass
-    # --------------------------
 
     cache = {}
 
@@ -360,9 +348,6 @@ def run_same_image_backpatch(
     if "hidden" not in cache:
         raise RuntimeError("Source hook did not capture hidden state.")
 
-    # --------------------------
-    # Patched generation
-    # --------------------------
 
     patch_hook = register_patch_hook(
         layers=layers,
@@ -389,9 +374,6 @@ def run_same_image_backpatch(
     }
 
 
-# ==================================================
-# MAIN
-# ==================================================
 
 def main(args):
 
@@ -547,9 +529,6 @@ def main(args):
     print("\nSaved:")
     print(args.out_path)
 
-    # ==================================================
-    # SUMMARY
-    # ==================================================
 
     summary = (
         df
@@ -589,9 +568,6 @@ def main(args):
     print(summary_path)
 
 
-# ==================================================
-# CLI
-# ==================================================
 
 if __name__ == "__main__":
 

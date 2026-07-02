@@ -18,9 +18,6 @@ from search_utils import (
     get_prompt,
 )
 
-# ==================================================
-# CONFIG
-# ==================================================
 
 DATASET_DIR = (
     "/oscar/data/epavlick/aparasel/"
@@ -30,9 +27,6 @@ DATASET_DIR = (
 
 torch.set_grad_enabled(False)
 
-# ==================================================
-# HELPERS
-# ==================================================
 
 def parse_filename(filename):
 
@@ -344,9 +338,6 @@ def run_forward_freeze(
     if positions.numel() == 0:
         raise ValueError("No visual positions found.")
 
-    # --------------------------
-    # Original generation
-    # --------------------------
 
     original_response = generate_from_inputs(
         model=model,
@@ -355,9 +346,6 @@ def run_forward_freeze(
         max_new_tokens=max_new_tokens,
     )
 
-    # --------------------------
-    # Source capture pass
-    # --------------------------
 
     cache = {}
 
@@ -379,9 +367,6 @@ def run_forward_freeze(
     if "hidden" not in cache:
         raise RuntimeError("Source hook did not capture hidden state.")
 
-    # --------------------------
-    # Patched generation
-    # --------------------------
 
     freeze_hooks = register_freeze_hooks(
         layers=layers,
@@ -412,9 +397,6 @@ def run_forward_freeze(
     }
 
 
-# ==================================================
-# MAIN
-# ==================================================
 
 def main(args):
 
@@ -569,9 +551,6 @@ def main(args):
     print("\nSaved:")
     print(args.out_path)
 
-    # ==================================================
-    # SUMMARY
-    # ==================================================
 
     summary = (
         df
@@ -611,9 +590,6 @@ def main(args):
     print(summary_path)
 
 
-# ==================================================
-# CLI
-# ==================================================
 
 if __name__ == "__main__":
 

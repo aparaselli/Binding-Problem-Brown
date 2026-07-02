@@ -2,9 +2,6 @@ import torch
 import pandas as pd
 from transformers import AutoTokenizer
 
-# ==================================================
-# CONFIG
-# ==================================================
 
 PATH = ("/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/target_hidden_states.pt")
 
@@ -12,9 +9,6 @@ REPRESENTATION = "bbox_mean_hidden"
 N_EXAMPLES = 5
 TOPK = 10
 
-# ==================================================
-# LOAD
-# ==================================================
 
 data = torch.load(
     PATH,
@@ -33,9 +27,6 @@ model, processor = load_vlm(
 
 model.eval()
 
-# ==================================================
-# INSPECT TOKENIZATION
-# ==================================================
 
 green_tokens = tokenizer.encode(
     " green",
@@ -53,9 +44,6 @@ print("L token ids:", L_tokens)
 green_id = green_tokens[0]
 L_id = L_tokens[0]
 
-# ==================================================
-# LOGIT LENS
-# ==================================================
 
 rows = []
 

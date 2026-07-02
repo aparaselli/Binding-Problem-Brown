@@ -535,9 +535,6 @@ def debug_first_examples(image_paths, model, processor):
         input("\nPress enter for next example...")
 
 
-# ==================================================
-# MAIN
-# ==================================================
 
 def main(args):
     model, processor = load_vlm(args.model_name)

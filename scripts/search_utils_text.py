@@ -21,9 +21,6 @@ except Exception:
     AutoModelForCausalLM = None
 
 
-# ==================================================
-# PROMPTS
-# ==================================================
 
 DISJUNCTIVE_PROMPT = """
 You are presented with a sequence containing descriptions of several shapes.
@@ -69,9 +66,6 @@ def get_prompt(condition):
     raise ValueError(condition)
 
 
-# ==================================================
-# MODEL
-# ==================================================
 
 def load_lm(model_name):
 
@@ -90,9 +84,6 @@ def load_lm(model_name):
 
     name = model_name.lower()
 
-    # ----------------------------------
-    # GEMMA
-    # ----------------------------------
 
     if "gemma" in name:
 
@@ -102,9 +93,6 @@ def load_lm(model_name):
             device_map="auto",
         )
 
-    # ----------------------------------
-    # QWEN-VL
-    # ----------------------------------
 
     elif "qwen" in name and "vl" in name:
 
@@ -114,9 +102,6 @@ def load_lm(model_name):
             device_map="auto",
         )
 
-    # ----------------------------------
-    # Normal LLMs
-    # ----------------------------------
 
     else:
 
@@ -130,9 +115,6 @@ def load_lm(model_name):
     return model, tokenizer
 
 
-# ==================================================
-# BUILD SEQUENCE
-# ==================================================
 import random
 
 def build_sequence(
@@ -142,22 +124,9 @@ def build_sequence(
     target_tokens=289,
     max_adjust_iters=200,
 ):
-    """
-    Creates a fixed-length sequence of slots.
-
-    If target_tokens <= 0, no padding is used and the
-    objects are simply concatenated.
-    """
-
-    # ----------------------------------
-    # NO PADDING MODE
-    # ----------------------------------
     if target_tokens <= 0:
         return ", ".join(object_strings)
 
-    # ----------------------------------
-    # PADDED MODE
-    # ----------------------------------
     num_slots = target_tokens
 
     for _ in range(max_adjust_iters):
@@ -191,9 +160,6 @@ def build_sequence(
 
     return sequence
 
-# ==================================================
-# INPUTS
-# ==================================================
 
 def build_inputs(
     tokenizer,
@@ -237,9 +203,6 @@ def build_inputs(
     return inputs
 
 
-# ==================================================
-# GENERATION
-# ==================================================
 
 @torch.no_grad()
 def search_model_call(
@@ -252,10 +215,6 @@ def search_model_call(
 
     prompt = get_prompt(condition)
 
-    # DEBUGGING
-    # print("=" * 80)
-    # print(prompt)
-    # print("=" * 80)
 
     device = next(model.parameters()).device
 
@@ -280,9 +239,6 @@ def search_model_call(
     return response
 
 
-# ==================================================
-# ANSWER PARSING
-# ==================================================
 
 def extract_answer(response):
 
@@ -306,9 +262,6 @@ def extract_answer(response):
     return None
 
 
-# ==================================================
-# EVALUATION
-# ==================================================
 
 def evaluate_prediction(
     response,

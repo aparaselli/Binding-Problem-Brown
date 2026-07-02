@@ -22,9 +22,6 @@ from search_utils import (
     build_inputs,
 )
 
-# ==================================================
-# CONFIG
-# ==================================================
 
 DATASET_DIR = (
     "/oscar/data/epavlick/aparasel/"
@@ -37,9 +34,6 @@ SEED = 42
 random.seed(SEED)
 np.random.seed(SEED)
 
-# ==================================================
-# PARSE
-# ==================================================
 
 def parse_filename(filename):
 
@@ -65,9 +59,6 @@ def parse_filename(filename):
     }
 
 
-# ==================================================
-# OBJECT STRINGS
-# ==================================================
 
 def object_to_string(obj):
     return f"{obj['color']} {obj['shape']}"
@@ -80,9 +71,6 @@ def build_partial_response(json_path):
 
     objects = data["objects"]
 
-    # --------------------------------------------------
-    # choose withheld object
-    # --------------------------------------------------
 
     if data["target_present"]:
 
@@ -119,9 +107,6 @@ def build_partial_response(json_path):
             len(objects)
         )
 
-    # --------------------------------------------------
-    # remaining objects
-    # --------------------------------------------------
 
     remaining = []
 
@@ -152,9 +137,6 @@ def build_partial_response(json_path):
     )
 
 
-# ==================================================
-# MAIN
-# ==================================================
 
 def main(args):
 
@@ -168,9 +150,6 @@ def main(args):
         model.parameters()
     ).device
 
-    # ==================================================
-    # COLLECT IMAGES
-    # ==================================================
 
     image_paths = []
 
@@ -201,9 +180,6 @@ def main(args):
         f"Found {len(image_paths)} images"
     )
 
-    # ==================================================
-    # EXTRACT FEATURES
-    # ==================================================
 
     layer_features = None
     metadata = []
@@ -232,12 +208,6 @@ def main(args):
                 path
             ).convert("RGB")
 
-            # --------------------------------------------------
-            # IMPORTANT:
-            #
-            # This assumes you've modified build_inputs
-            # so it accepts assistant_prefill.
-            # --------------------------------------------------
 
             inputs = build_inputs(
                 processor=processor,
@@ -307,9 +277,6 @@ def main(args):
         metadata
     )
 
-    # ==================================================
-    # PROBES
-    # ==================================================
 
     results = []
 
@@ -528,9 +495,6 @@ def main(args):
     print(results)
 
 
-# ==================================================
-# CLI
-# ==================================================
 
 if __name__ == "__main__":
 

@@ -33,17 +33,6 @@ def render_image_from_metadata(
     metadata,
     keep_only_target=False,
 ):
-    """
-    Re-render an image from its metadata.
-
-    If keep_only_target=True, only the target object
-    is drawn and all distractors are omitted.
-
-    Returns
-    -------
-    PIL.Image
-    """
-
     fig, ax = plt.subplots(
         figsize=(6, 6),
         dpi=100,
@@ -66,9 +55,6 @@ def render_image_from_metadata(
         shape = obj["shape"]
         color = obj["color"]
 
-        # ------------------------------
-        # Circles
-        # ------------------------------
 
         if shape == "circle":
 
@@ -81,9 +67,6 @@ def render_image_from_metadata(
                 linestyle="None",
             )
 
-        # ------------------------------
-        # Letters
-        # ------------------------------
 
         else:
 
@@ -98,8 +81,6 @@ def render_image_from_metadata(
                 fontweight="bold",
             )
 
-    # Use EXACT same save pipeline
-    # as dataset generation
     buf = io.BytesIO()
 
     plt.savefig(
@@ -185,9 +166,6 @@ DATASET_DIR = (
     "visual_search_dataset"
 )
 
-# ==================================================
-# PARSE
-# ==================================================
 
 def parse_filename(filename):
 
@@ -263,9 +241,6 @@ def get_target_patch_indices(target_pos, grid_h, grid_w):
     return sorted(list(set(patch_indices)))
 
 
-# ==================================================
-# MODEL LAYERS
-# ==================================================
 
 def get_decoder_layers(model):
 
@@ -294,9 +269,6 @@ def get_decoder_layers(model):
     )
 
 
-# ==================================================
-# LOAD 5-DISTRACTOR TARGET MEANS
-# ==================================================
 
 def load_five_dist_means(rep_path):
 
@@ -371,9 +343,6 @@ def extract_clean_target_reps(
         )
 
     return reps
-# ==================================================
-# PATCHED GENERATION
-# ==================================================
 
 @torch.no_grad()
 def patched_search_model_call(
@@ -409,8 +378,6 @@ def patched_search_model_call(
 
     def make_hook(block_idx):
 
-        # hidden_states[0] is embedding layer.
-        # block 0 output corresponds to hidden_states[1].
         mean_layer = block_idx + 1
 
         patch_vec = (
@@ -427,8 +394,6 @@ def patched_search_model_call(
                 h = output
                 rest = None
 
-            # During generation after prefill, seq_len may be 1.
-            # Only patch on the full input/prefill pass.
             if h.dim() == 3 and h.shape[1] > idx.max().item():
 
                 h = h.clone()
@@ -482,9 +447,6 @@ def patched_search_model_call(
     return response
 
 
-# ==================================================
-# MAIN
-# ==================================================
 
 def main(args):
 
@@ -682,9 +644,6 @@ def main(args):
     print(summary_path)
 
 
-# ==================================================
-# CLI
-# ==================================================
 
 if __name__ == "__main__":
 

@@ -16,9 +16,6 @@ except Exception:
     AutoModelForImageTextToText = None
 
 
-# ==================================================
-# PROMPTS
-# ==================================================
 
 DISJUNCTIVE_PROMPT = """
 You are presented with an image containing several letters.
@@ -80,9 +77,6 @@ def get_prompt(condition):
     raise ValueError(f"Unknown condition: {condition}")
 
 
-# ==================================================
-# MODEL LOADING
-# ==================================================
 
 def load_vlm(model_name):
 
@@ -106,9 +100,6 @@ def load_vlm(model_name):
         cache_dir="/oscar/scratch/aparasel/hf_cache",
     )
 
-    # ==========================================
-    # GEMMA
-    # ==========================================
 
     if "gemma" in name_lc:
 
@@ -125,9 +116,6 @@ def load_vlm(model_name):
             cache_dir="/oscar/scratch/aparasel/hf_cache",
         )
 
-    # ==========================================
-    # QWEN
-    # ==========================================
 
     else:
 
@@ -163,9 +151,6 @@ def load_vlm(model_name):
     return model, processor
 
 
-# ==================================================
-# INPUT BUILDING
-# ==================================================
 
 def build_inputs(
     processor,
@@ -237,9 +222,6 @@ def build_inputs(
     return inputs
 
 
-# ==================================================
-# GENERATION
-# ==================================================
 
 @torch.no_grad()
 def search_model_call(
@@ -284,9 +266,6 @@ def search_model_call(
     return response
 
 
-# ==================================================
-# ANSWER PARSING
-# ==================================================
 
 def extract_answer(response):
 
@@ -320,9 +299,6 @@ def extract_answer(response):
     return None
 
 
-# ==================================================
-# EVALUATION
-# ==================================================
 
 def evaluate_prediction(
     response,
