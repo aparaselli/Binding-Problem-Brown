@@ -18,3 +18,12 @@ Example call:
 python extract_target_hidden_states.py --out_path results/target_hidden_states.pt
 
 Binding-Problem-Brown/Analysis/activations_analysis_example.ipynb - This noteboook contains an example of loading the hidden states!
+
+## Benchmarking
+
+scripts/benchmark.py - Runs the selected VLM on every image in the counterfactual visual-search dataset, records the model response/prediction/correctness plus target-position metadata, and writes both a full CSV and an accuracy summary grouped by condition and distractor count.
+
+Example call:
+```bash
+python scripts/benchmark.py --out_path results/benchmark.csv
+```
