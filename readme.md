@@ -16,3 +16,5 @@ scripts/extract_target_hidden_states.py - Loads the counterfactual visual-search
 
 Example call:
 python extract_target_hidden_states.py --out_path results/target_hidden_states.pt
+
+Binding-Problem-Brown/Analysis/activations_analysis_example.ipynb - This noteboook contains an example of loading the hidden states!

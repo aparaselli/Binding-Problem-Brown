@@ -229,7 +229,7 @@ def search_model_call(
     processor,
     image,
     condition,
-    max_new_tokens=256,
+    max_new_tokens=1024,
 ):
 
     prompt = get_prompt(condition)
