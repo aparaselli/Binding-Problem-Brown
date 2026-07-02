@@ -1,0 +1,7 @@
+# Results
+Results/
+
+# Generated datasets
+search-dataset/visual_search_dataset/
+search-dataset/visual_search_dataset_counterfactual/
+search-dataset/dataset_samples/

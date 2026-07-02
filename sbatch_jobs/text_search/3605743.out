@@ -1,0 +1,40 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 3605743
+##  Job Name : qwen_vlm_search
+##  Nodelist : gpu2601
+##      CPUs : 1
+##  Mem/Node : 65536 MB
+## Directory : /oscar/data/epavlick/aparasel/Binding-Problem-Brown/sbatch_jobs/text_search
+##   Job Started : Wed Jul  1 11:55:41 EDT 2026
+###############################################################################
+Running 2000 trials
+
+Saved:
+/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/qwen_vlm_text_search_no_padding.csv
+
+Saved summary:
+/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/qwen_vlm_text_search_no_padding_summary.csv
+
+Accuracy Summary
+
+      condition  num_distractors  correct
+0   conjunctive                5     1.00
+1   conjunctive               10     0.96
+2   conjunctive               15     0.99
+3   conjunctive               20     0.97
+4   conjunctive               25     0.95
+5   conjunctive               30     0.96
+6   conjunctive               35     0.88
+7   conjunctive               40     0.87
+8   conjunctive               45     0.89
+9   conjunctive               50     0.79
+10  disjunctive                5     1.00
+11  disjunctive               10     1.00
+12  disjunctive               15     1.00
+13  disjunctive               20     1.00
+14  disjunctive               25     0.99
+15  disjunctive               30     0.92
+16  disjunctive               35     0.91
+17  disjunctive               40     0.92
+18  disjunctive               45     0.81
+19  disjunctive               50     0.71
