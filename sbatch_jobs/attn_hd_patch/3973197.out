@@ -1,0 +1,60 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 3973197
+##  Job Name : qwen_vlm_search
+##  Nodelist : gpu2102
+##      CPUs : 1
+##  Mem/Node : 65536 MB
+## Directory : /oscar/data/epavlick/aparasel/Binding-Problem-Brown/sbatch_jobs/attn_hd_patch
+##   Job Started : Tue Jul 14 14:12:35 EDT 2026
+###############################################################################
+Loading Qwen/Qwen2.5-VL-7B-Instruct
+Model loaded
+
+Resolved binary answer tokens:
+  True:  2514 'True'
+  False: 4049 'False'
+
+Discovered language decoder:
+  stack path: model.language_model.layers
+  layers:     28
+  heads:      28
+  head dim:   128
+
+Found 100 matched-source candidates with 10 distractors
+Patching into matched 40-distractor examples
+Source cache dtype: float16
+
+Saved per-head patch results:
+/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/conj_headpatch_all_in_one_qwen.csv
+
+Saved head summary:
+/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/conj_headpatch_all_in_one_qwen_head_summary.csv
+
+Saved pair summary:
+/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/conj_headpatch_all_in_one_qwen_pair_summary.csv
+
+Top heads by mean delta margin:
+ layer  head   n  mean_delta_margin  median_delta_margin  positive_delta_rate  mean_recovery  median_recovery  valid_recovery_n  patched_correct_rate  patched_flip_to_correct_rate
+    20     3 100            0.19750                0.250                 0.62       0.261117         0.254630                60                  0.72                          0.13
+    19    23 100            0.07250                0.125                 0.54       0.088350         0.102632                60                  0.66                          0.06
+    20     1 100            0.06625                0.125                 0.53       0.131284         0.117647                60                  0.66                          0.05
+    23    27 100            0.05875                0.125                 0.53       0.077652         0.071429                60                  0.65                          0.04
+    18     4 100            0.04000                0.000                 0.44       0.044426         0.057714                60                  0.64                          0.03
+    20     5 100            0.03625                0.125                 0.51       0.071421         0.060024                60                  0.63                          0.02
+    18    15 100            0.03500                0.000                 0.44       0.041076         0.055556                60                  0.66                          0.04
+    26    26 100            0.03250                0.000                 0.47       0.057448         0.044466                60                  0.63                          0.02
+    24    27 100            0.03250                0.000                 0.42       0.042703         0.037749                60                  0.64                          0.03
+    26    25 100            0.02875                0.000                 0.40       0.039339         0.032258                60                  0.63                          0.02
+    20     4 100            0.02625                0.000                 0.44       0.047064         0.044466                60                  0.64                          0.02
+    22     8 100            0.02375                0.000                 0.41       0.041560         0.040408                60                  0.64                          0.02
+    23    11 100            0.02375                0.000                 0.38       0.034659         0.031498                60                  0.65                          0.03
+    18    21 100            0.01750                0.000                 0.38       0.022880         0.029031                60                  0.63                          0.03
+    18    18 100            0.01625                0.000                 0.32       0.026761         0.000000                60                  0.63                          0.01
+    22    27 100            0.01625                0.000                 0.27       0.023079         0.000000                60                  0.62                          0.00
+    18    13 100            0.01375                0.000                 0.32       0.022366         0.000000                60                  0.62                          0.00
+     9    25 100            0.01375                0.000                 0.23       0.007182         0.000000                60                  0.62                          0.00
+     9    11 100            0.01250                0.000                 0.21       0.009345         0.000000                60                  0.62                          0.00
+    21    19 100            0.01125                0.000                 0.29       0.029754         0.000000                60                  0.61                          0.00
+
+Patch errors:
+0

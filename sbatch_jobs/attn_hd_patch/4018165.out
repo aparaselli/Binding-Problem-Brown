@@ -1,0 +1,25 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 4018165
+##  Job Name : qwen_vlm_search
+##  Nodelist : gpu2252
+##      CPUs : 1
+##  Mem/Node : 65536 MB
+## Directory : /oscar/data/epavlick/aparasel/Binding-Problem-Brown/sbatch_jobs/attn_hd_patch
+##   Job Started : Wed Jul 15 20:49:41 EDT 2026
+###############################################################################
+Loading google/gemma-3-27b-it
+Model loaded
+
+Resolved binary answer tokens:
+  True:  4339 'True'
+  False: 9277 'False'
+
+Discovered language decoder:
+  stack path: model.language_model.layers
+  layers:     62
+  heads:      32
+  head dim:   128
+
+Found 100 matched-source candidates with 10 distractors
+Patching into matched 40-distractor examples
+Source cache dtype: float16
