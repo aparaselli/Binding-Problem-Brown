@@ -10,3 +10,35 @@
 Loading Qwen/Qwen2.5-VL-7B-Instruct
 Model loaded
 Found 2200 images
+
+Saved:
+/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/qwen_search_results_counterfactual.csv
+
+Accuracy Summary
+
+      condition  num_distractors  correct
+0   conjunctive                0     1.00
+1   conjunctive                5     0.77
+2   conjunctive               10     0.76
+3   conjunctive               15     0.57
+4   conjunctive               20     0.62
+5   conjunctive               25     0.55
+6   conjunctive               30     0.48
+7   conjunctive               35     0.58
+8   conjunctive               40     0.49
+9   conjunctive               45     0.54
+10  conjunctive               50     0.54
+11  disjunctive                0     1.00
+12  disjunctive                5     0.81
+13  disjunctive               10     0.85
+14  disjunctive               15     0.93
+15  disjunctive               20     0.96
+16  disjunctive               25     0.96
+17  disjunctive               30     0.95
+18  disjunctive               35     0.96
+19  disjunctive               40     0.95
+20  disjunctive               45     0.98
+21  disjunctive               50     0.98
+
+Saved summary:
+/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/qwen_search_results_counterfactual_summary.csv

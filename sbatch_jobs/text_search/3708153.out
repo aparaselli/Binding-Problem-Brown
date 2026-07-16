@@ -1,9 +1,10 @@
 ## SLURM PROLOG ###############################################################
-##    Job ID : 3605633
+##    Job ID : 3708153
 ##  Job Name : qwen_vlm_search
-##  Nodelist : gpu2108
+##  Nodelist : gpu2605
 ##      CPUs : 1
 ##  Mem/Node : 65536 MB
 ## Directory : /oscar/data/epavlick/aparasel/Binding-Problem-Brown/sbatch_jobs/text_search
-##   Job Started : Wed Jul  1 11:51:09 EDT 2026
+##   Job Started : Tue Jul  7 15:33:07 EDT 2026
 ###############################################################################
+Running 2000 trials

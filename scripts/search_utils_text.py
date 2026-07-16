@@ -23,15 +23,16 @@ except Exception:
 
 
 DISJUNCTIVE_PROMPT = """
-You are presented with a sequence containing descriptions of several shapes.
+You are presented with a sequence containing descriptions of letters.
+Each letter is an 'L' and is either red or green.
 
-Your task is to determine whether there are any green shapes in the sequence.
+Your task is to determine whether there are any green 'L's in the sequence.
 
 Follow these steps carefully:
 
-1. Briefly describe each shape in the sequence, noting its color.
+1. Briefly describe each letter in the sequence, noting its color.
 
-2. Conclude your response by stating [True] if there are any green shapes,
+2. Conclude your response by stating [True] if there are any green 'L's,
 or [False] if there are none.
 
 Enclose your final answer in square brackets.
@@ -240,26 +241,31 @@ def search_model_call(
 
 
 
+
 def extract_answer(response):
 
-    match = re.search(
+    if response is None:
+        return None
+
+    matches = re.findall(
         r"\[\s*(true|false)\s*\]",
         response,
         flags=re.IGNORECASE,
     )
 
-    if match:
-        return match.group(1).lower() == "true"
+    if matches:
+        answer = matches[-1].lower()
+        return answer == "true"
 
-    r = response.lower()
+    response_lc = response.lower()
+    last_true = response_lc.rfind("[true]")
+    last_false = response_lc.rfind("[false]")
 
-    if "[true]" in r:
-        return True
+    if last_true == -1 and last_false == -1:
+        return None
 
-    if "[false]" in r:
-        return False
+    return last_true > last_false
 
-    return None
 
 
 

@@ -24,8 +24,8 @@ def build_objects(condition, num_distractors, target_present):
 
     if condition == "disjunctive":
         if target_present:
-            objs.append("green circle")
-        objs.extend(["red circle"] * num_distractors)
+            objs.append("green L")
+        objs.extend(["red L"] * num_distractors)
 
     elif condition == "conjunctive":
         if target_present:

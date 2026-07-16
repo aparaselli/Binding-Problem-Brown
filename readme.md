@@ -27,3 +27,44 @@ Example call:
 ```bash
 python scripts/benchmark.py --out_path results/benchmark.csv
 ```
+
+## Attention head search/analysis
+
+This script performs a causal attention head patching experiment on the visual search benchmark.
+
+For each matched source-target image pair, it:
+
+1. Runs the behavioral evaluation on both the source (e.g., 10 distractors) and target (e.g., 40 distractors) images. (This is usually very fast/cheap)
+2. Caches the pre-`o_proj` activations for every attention head at the final input token from the source example.
+3. Individually patches each attention head into the corresponding target example during generation.
+4. Measures the change in the model's True/False decision margin after patching.
+5. Computes a normalized recovery score indicating how much each head restores the source behavior.
+
+The script automatically discovers the language decoder architecture, supports multiple vision-language models, and saves:
+
+- **Per-head results** for every trial, layer, and head.
+- **Head summary** containing aggregate recovery statistics.
+- **Pair summary** summarizing the best-performing heads for each source-target image pair.
+
+This experiment is designed to identify attention heads that causally contribute to visual search performance under increased distractor difficulty.
+
+### Command Line Arguments
+
+| Argument | Description | Default |
+|----------|-------------|---------|
+| `--model_name` | Vision-language model to evaluate. | `Qwen/Qwen2.5-VL-7B-Instruct` |
+| `--dataset_dir` | Path to the visual search dataset. | `search-dataset/visual_search_dataset_counterfactual` |
+| `--out_path` | Output CSV containing per-head patching results. | **Required** |
+| `--source_condition` | Source search condition used to cache attention heads (`conjunctive` or `disjunctive`). | `disjunctive` |
+| `--target_condition` | Target search condition that receives the patched activations. | `conjunctive` |
+| `--source_distractors` | Number of distractors in the source images. | `10` |
+| `--target_distractors` | Number of distractors in the target images. | `40` |
+### Example Usage
+
+```bash
+python benchmark_headpatch.py \
+    --source_condition conjunctive \
+    --target_condition conjunctive \
+    --source_distractors 10 \
+    --target_distractors 40 \
+    --out_path results/headpatch.csv

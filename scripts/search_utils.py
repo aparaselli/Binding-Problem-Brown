@@ -60,10 +60,31 @@ Enclose your final answer in square brackets, as shown.
 """.strip()
 
 
+PROMPT_BINARY = """
+You are presented with an image containing letters.
 
-def get_prompt(condition):
+Is there a green letter L in the image?
+
+Answer with exactly one word:
+
+True
+
+or
+
+False
+
+Do not provide any explanation.
+""".strip()
+
+
+
+def get_prompt(condition, prompt_type="regular"):
 
     condition = condition.lower()
+
+    if prompt_type == "binary":
+
+        return PROMPT_BINARY
 
     if condition == "disjunctive":
         return DISJUNCTIVE_PROMPT
@@ -229,10 +250,14 @@ def search_model_call(
     processor,
     image,
     condition,
+    prompt_type="regular",
     max_new_tokens=1024,
 ):
 
-    prompt = get_prompt(condition)
+    prompt = get_prompt(
+        condition,
+        prompt_type=prompt_type,
+    )
 
     model_device = next(model.parameters()).device
 
@@ -263,40 +288,70 @@ def search_model_call(
         clean_up_tokenization_spaces=False,
     )[0].strip()
 
-    return response
+
+    scores = gen_out.scores[0]
+
+    log_probs = scores.log_softmax(dim=-1)
+
+    first_token_id = new_token_ids[0, 0].item()
+
+    first_token = processor.tokenizer.decode(
+        [first_token_id],
+        clean_up_tokenization_spaces=False,
+    )
+
+    first_token_logprob = (
+        log_probs[0, first_token_id]
+        .float()
+        .cpu()
+        .item()
+    )
+
+    return {
+        "response": response,
+        "first_token": first_token,
+        "first_token_id": first_token_id,
+        "first_token_logprob": first_token_logprob,
+    }
 
 
 
-def extract_answer(response):
+def extract_answer(response, prompt_type="regular"):
 
     if response is None:
         return None
 
-    match = re.search(
+    if prompt_type == "binary":
+
+        text = response.strip().lower()
+
+        if text == "true":
+            return True
+
+        if text == "false":
+            return False
+
+        return None
+
+    # regular prompt type parser
+    matches = re.findall(
         r"\[\s*(true|false)\s*\]",
         response,
         flags=re.IGNORECASE,
     )
 
-    if match:
-
-        answer = match.group(1).lower()
-
-        if answer == "true":
-            return True
-
-        if answer == "false":
-            return False
+    if matches:
+        answer = matches[-1].lower()
+        return answer == "true"
 
     response_lc = response.lower()
+    last_true = response_lc.rfind("[true]")
+    last_false = response_lc.rfind("[false]")
 
-    if "[true]" in response_lc:
-        return True
+    if last_true == -1 and last_false == -1:
+        return None
 
-    if "[false]" in response_lc:
-        return False
-
-    return None
+    return last_true > last_false
 
 
 

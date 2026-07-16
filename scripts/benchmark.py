@@ -164,22 +164,21 @@ def main(args):
             with Image.open(path) as img:
                 image = img.convert("RGB")
 
-            if (meta["condition"] == "conjunctive") & (args.prompt_type != "regular"):
-                response = search_model_call(
-                    model=model,
-                    processor=processor,
-                    image=image,
-                    condition="conjunctive_alt",
-                )
-            else:
-                response = search_model_call(
-                    model=model,
-                    processor=processor,
-                    image=image,
-                    condition=meta["condition"],
-                )
+            result = search_model_call(
+                model=model,
+                processor=processor,
+                image=image,
+                condition=meta["condition"],
+                prompt_type=args.prompt_type,
+            )
 
-            prediction = extract_answer(response)
+            response = result["response"]
+
+
+            prediction = extract_answer(
+                response,
+                prompt_type=args.prompt_type,
+            )
 
             correct = (
                 prediction
@@ -227,6 +226,9 @@ def main(args):
             "target_x_norm": target_features["target_x_norm"],
             "target_y_norm": target_features["target_y_norm"],
             "target_dist_from_center": target_features["target_dist_from_center"],
+            "first_token": result["first_token"],
+            "first_token_id": result["first_token_id"],
+            "first_token_logprob": result["first_token_logprob"],
         })
 
         # periodic save

@@ -1,0 +1,44 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 4014599
+##  Job Name : Qwen72B_search_binary
+##  Nodelist : gpu2505
+##      CPUs : 1
+##  Mem/Node : 65536 MB
+## Directory : /oscar/data/epavlick/aparasel/Binding-Problem-Brown/sbatch_jobs/visual_search
+##   Job Started : Wed Jul 15 22:21:57 EDT 2026
+###############################################################################
+Loading Qwen/Qwen2.5-VL-72B-Instruct
+Model loaded
+Found 2200 images
+
+Saved:
+/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/qwen72b_search_results_counterfactual_binary.csv
+
+Accuracy Summary
+
+      condition  num_distractors  correct
+0   conjunctive                0     1.00
+1   conjunctive                5     0.91
+2   conjunctive               10     0.74
+3   conjunctive               15     0.65
+4   conjunctive               20     0.58
+5   conjunctive               25     0.52
+6   conjunctive               30     0.54
+7   conjunctive               35     0.51
+8   conjunctive               40     0.55
+9   conjunctive               45     0.52
+10  conjunctive               50     0.50
+11  disjunctive                0     1.00
+12  disjunctive                5     1.00
+13  disjunctive               10     1.00
+14  disjunctive               15     1.00
+15  disjunctive               20     1.00
+16  disjunctive               25     1.00
+17  disjunctive               30     1.00
+18  disjunctive               35     1.00
+19  disjunctive               40     1.00
+20  disjunctive               45     1.00
+21  disjunctive               50     1.00
+
+Saved summary:
+/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/qwen72b_search_results_counterfactual_binary_summary.csv

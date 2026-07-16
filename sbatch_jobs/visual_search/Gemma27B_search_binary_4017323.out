@@ -1,0 +1,44 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 4017323
+##  Job Name : Gemma27B_search_binary
+##  Nodelist : gpu2252
+##      CPUs : 1
+##  Mem/Node : 65536 MB
+## Directory : /oscar/data/epavlick/aparasel/Binding-Problem-Brown/sbatch_jobs/visual_search
+##   Job Started : Wed Jul 15 20:07:58 EDT 2026
+###############################################################################
+Loading google/gemma-3-27b-it
+Model loaded
+Found 2200 images
+
+Saved:
+/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/gemma27b_search_results_counterfactual_binary.csv
+
+Accuracy Summary
+
+      condition  num_distractors  correct
+0   conjunctive                0     0.50
+1   conjunctive                5     0.71
+2   conjunctive               10     0.58
+3   conjunctive               15     0.57
+4   conjunctive               20     0.58
+5   conjunctive               25     0.56
+6   conjunctive               30     0.51
+7   conjunctive               35     0.58
+8   conjunctive               40     0.57
+9   conjunctive               45     0.59
+10  conjunctive               50     0.48
+11  disjunctive                0     0.50
+12  disjunctive                5     0.87
+13  disjunctive               10     0.78
+14  disjunctive               15     0.78
+15  disjunctive               20     0.75
+16  disjunctive               25     0.74
+17  disjunctive               30     0.77
+18  disjunctive               35     0.78
+19  disjunctive               40     0.83
+20  disjunctive               45     0.91
+21  disjunctive               50     0.84
+
+Saved summary:
+/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/gemma27b_search_results_counterfactual_binary_summary.csv
