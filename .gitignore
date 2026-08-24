@@ -3,6 +3,10 @@ Results/
 scripts/results
 
 # Generated datasets
-search-dataset/visual_search_dataset/
-search-dataset/visual_search_dataset_counterfactual/
-search-dataset/dataset_samples/
+search-dataset/
+
+# Slurm jobs, logs, and job scripts
+sbatch_jobs/
+
+# Retired scripts
+scripts/retired_scripts/
