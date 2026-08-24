@@ -18,7 +18,16 @@ from torch import nn
 from tqdm import tqdm
 
 from search_utils import build_inputs, load_vlm
-
+"""
+Example call
+python benchmark_headpatch.py \
+    --source_condition disjunctive \
+    --target_condition conjunctive \
+    --source_distractors 40 \
+    --target_distractors 40 \
+    --token_offset -9 \
+    --out_path ../Results/disj40_to_conj40_headpatch_qwen_-9.csv
+"""
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -32,11 +41,7 @@ DEFAULT_DATASET_DIR = os.path.abspath(
 )
 
 BINARY_PROMPT = """
-You are presented with an image containing letters.
-
-Is there a green letter L in the image?
-
-Answer with exactly one word:
+Answer the following question with exactly one word:
 
 True
 
@@ -45,10 +50,19 @@ or
 False
 
 Do not provide any explanation.
+
+Question:
+You are presented with an image containing letters.
+
+Is there a green letter L in the image?
 """.strip()
 
+# NOTE: "disjunctive_T" is listed before "disjunctive" so the alternation
+# prefers the longer match; with re.fullmatch this isn't strictly required
+# (the trailing "_distractors_..." literal disambiguates them either way),
+# but keeping the longer alternative first is safer.
 FILENAME_PATTERN = re.compile(
-    r"(disjunctive|conjunctive)"
+    r"(disjunctive_T|disjunctive|conjunctive)"
     r"_distractors_(\d+)"
     r"_trial_(\d+)"
     r"_target_(true|false)\.png"
@@ -142,6 +156,36 @@ def collect_source_paths(
 
     return source_paths
 
+def print_patch_token_window(
+    inputs: Dict[str, torch.Tensor],
+    tokenizer,
+    patch_position: int,
+    window: int = 2,
+    label: str = "Patch",
+) -> None:
+    input_ids = inputs["input_ids"][0]
+
+    start = max(0, patch_position - window)
+    end = min(len(input_ids), patch_position + window + 1)
+
+    print(f"\n{label} token window:")
+    print(f"  patch_position: {patch_position}")
+
+    for pos in range(start, end):
+        token_id = int(input_ids[pos].item())
+        token = tokenizer.decode(
+            [token_id],
+            skip_special_tokens=False,
+            clean_up_tokenization_spaces=False,
+        )
+
+        marker = "  <-- PATCHED HERE" if pos == patch_position else ""
+
+        print(
+            f"  position {pos:4d} | "
+            f"id {token_id:6d} | "
+            f"{token!r}{marker}"
+        )
 
 def load_target_metadata(image_path: str) -> Dict[str, Optional[float]]:
     json_path = os.path.splitext(image_path)[0] + ".json"
@@ -577,6 +621,7 @@ def run_source_with_attention_cache(
     num_heads: int,
     expected_head_dim: Optional[int],
     cache_dtype: str,
+    token_offset: int,
 ) -> Tuple[Dict[str, Any], Dict[int, torch.Tensor], Dict[str, Any]]:
     model_device = next(model.parameters()).device
     inputs = build_inputs(
@@ -586,6 +631,23 @@ def run_source_with_attention_cache(
         prompt=BINARY_PROMPT,
     )
     last_position = get_last_input_position(inputs)
+
+
+    patch_position = last_position + token_offset
+
+    print_patch_token_window(
+        inputs=inputs,
+        tokenizer=tokenizer,
+        patch_position=patch_position,
+        window=2,
+        label="SOURCE",
+    )
+
+    if patch_position < 0:
+        raise IndexError(
+            f"token_offset={token_offset} gives invalid "
+            f"patch_position={patch_position}."
+        )
 
     cache = OProjInputCache()
     handles = []
@@ -636,13 +698,13 @@ def run_source_with_attention_cache(
 
         if heads.shape[0] != 1:
             raise ValueError("Caching expects batch size 1.")
-        if last_position >= heads.shape[1]:
+        if patch_position >= heads.shape[1]:
             raise IndexError(
-                f"last_position={last_position} exceeds sequence "
+                f"patch_position={patch_position} exceeds sequence "
                 f"length={heads.shape[1]}."
             )
 
-        selected = heads[0, last_position].detach()
+        selected = heads[0, patch_position].detach()
         source_cache[layer_index] = move_cache_to_storage(
             selected,
             cache_dtype=cache_dtype,
@@ -653,6 +715,8 @@ def run_source_with_attention_cache(
     metadata = {
         "input_text_length": int(inputs["input_ids"].shape[-1]),
         "last_input_position": last_position,
+        "patch_position": patch_position,
+        "token_offset": token_offset,
         "layer_cache_shape": first_shape,
         "cache_dtype": cache_dtype,
     }
@@ -795,7 +859,8 @@ def run_single_head_patch(
     source_head: torch.Tensor,
     num_heads: int,
     expected_head_dim: Optional[int],
-) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    token_offset: int,
+):
     model_device = next(model.parameters()).device
     inputs = build_inputs(
         processor=processor,
@@ -805,10 +870,18 @@ def run_single_head_patch(
     )
     last_position = get_last_input_position(inputs)
 
+    patch_position = last_position + token_offset
+
+    if patch_position < 0:
+        raise IndexError(
+            f"token_offset={token_offset} gives invalid "
+            f"patch_position={patch_position}."
+        )
+
     patcher = SingleHeadLastTokenPatcher(
         source_head=source_head,
         head_index=head_index,
-        target_position=last_position,
+        target_position=patch_position,
         num_heads=num_heads,
         expected_head_dim=expected_head_dim,
     )
@@ -842,6 +915,8 @@ def run_single_head_patch(
     intervention_metadata = {
         "target_input_text_length": int(inputs["input_ids"].shape[-1]),
         "target_last_position": last_position,
+        "target_patch_position": patch_position,
+        "token_offset": token_offset,
         "observed_o_proj_input_shape": str(
             patcher.observed_input_shape
         ),
@@ -998,7 +1073,11 @@ def main(args) -> None:
         source_distractors=args.source_distractors,
         max_pairs=args.max_pairs,
     )
-
+    if args.token_offset > 0:
+        raise ValueError(
+            "--token_offset must be <= 0. "
+            "Use 0 for the final input token, -1 for one token before, etc."
+        )
     print(
         f"\nFound {len(source_paths)} matched-source candidates with "
         f"{args.source_distractors} distractors"
@@ -1054,6 +1133,7 @@ def main(args) -> None:
                 num_heads=num_heads,
                 expected_head_dim=expected_head_dim,
                 cache_dtype=args.cache_dtype,
+                token_offset=args.token_offset,
             )
 
             source_margin = float(
@@ -1120,6 +1200,7 @@ def main(args) -> None:
                             source_head=source_layer[head_index],
                             num_heads=num_heads,
                             expected_head_dim=expected_head_dim,
+                            token_offset=args.token_offset,
                         )
 
                         patched_margin = float(
@@ -1200,6 +1281,9 @@ def main(args) -> None:
                             "observed_o_proj_layout": intervention_metadata[
                                 "observed_o_proj_layout"
                             ],
+                            "token_offset": args.token_offset,
+                            "source_patch_position": source_cache_metadata["patch_position"],
+                            "target_patch_position": intervention_metadata["target_patch_position"],
                             "decoder_stack_path": decoder_stack.path,
                             "num_layers": num_layers,
                             "num_heads": num_heads,
@@ -1357,13 +1441,13 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--source_condition",
-        choices=["disjunctive", "conjunctive"],
+        choices=["disjunctive", "disjunctive_T", "conjunctive"],
         default="disjunctive",
     )
 
     parser.add_argument(
         "--target_condition",
-        choices=["disjunctive", "conjunctive"],
+        choices=["disjunctive", "disjunctive_T", "conjunctive"],
         default="conjunctive",
     )
     parser.add_argument(
@@ -1399,6 +1483,15 @@ if __name__ == "__main__":
         help=(
             "Only patch pairs where source_margin - target_margin exceeds "
             "--min_recovery_denominator."
+        ),
+    )
+    parser.add_argument(
+        "--token_offset",
+        type=int,
+        default=0,
+        help=(
+            "Token position relative to the final input token for head patching. "
+            "0 = final input token, -1 = one token before, -2 = two before, etc."
         ),
     )
     parser.add_argument(

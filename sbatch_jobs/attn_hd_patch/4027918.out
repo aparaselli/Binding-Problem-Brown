@@ -23,3 +23,38 @@ Discovered language decoder:
 Found 100 matched-source candidates with 40 distractors
 Patching into matched 40-distractor examples
 Source cache dtype: float16
+
+Saved per-head patch results:
+/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/disj40_to_conj40_headpatch_qwen.csv
+
+Saved head summary:
+/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/disj40_to_conj40_headpatch_qwen_head_summary.csv
+
+Saved pair summary:
+/oscar/data/epavlick/aparasel/Binding-Problem-Brown/Results/disj40_to_conj40_headpatch_qwen_pair_summary.csv
+
+Top heads by mean delta margin:
+ layer  head   n  mean_delta_margin  median_delta_margin  positive_delta_rate  mean_recovery  median_recovery  valid_recovery_n  patched_correct_rate  patched_flip_to_correct_rate
+    20     3 100            0.86875               0.8750                 1.00       0.158291         0.137121               100                  0.80                          0.18
+    20     1 100            0.72875               0.7500                 1.00       0.147278         0.109095               100                  0.73                          0.11
+    26    26 100            0.24625               0.2500                 0.95       0.036184         0.038462               100                  0.67                          0.05
+    20     4 100            0.21625               0.2500                 0.92       0.055134         0.028778               100                  0.65                          0.03
+    23    27 100            0.21625               0.2500                 0.89       0.033181         0.033060               100                  0.66                          0.04
+    19    23 100            0.18500               0.1250                 0.75       0.030859         0.035714               100                  0.65                          0.03
+    18    15 100            0.17625               0.1250                 0.68       0.017596         0.031514               100                  0.66                          0.04
+    18     4 100            0.17125               0.1875                 0.54      -0.001880         0.027885               100                  0.67                          0.05
+    20     5 100            0.16750               0.1250                 0.85       0.040601         0.022266               100                  0.64                          0.02
+    18    21 100            0.15875               0.1250                 0.66       0.009891         0.021277               100                  0.66                          0.04
+    23    11 100            0.14125               0.1250                 0.68       0.012743         0.019419               100                  0.66                          0.04
+    26    25 100            0.12000               0.1250                 0.72       0.015714         0.018350               100                  0.64                          0.02
+    24    27 100            0.11125               0.1250                 0.60       0.011619         0.016261               100                  0.66                          0.04
+    18    18 100            0.10750               0.1250                 0.54       0.007331         0.016261               100                  0.65                          0.03
+    22     7 100            0.10500               0.1250                 0.67       0.020579         0.016393               100                  0.64                          0.02
+    22     8 100            0.10500               0.1250                 0.56       0.013170         0.014389               100                  0.62                          0.01
+    26    17 100            0.10250               0.1250                 0.59       0.007373         0.016393               100                  0.65                          0.03
+    19    24 100            0.10000               0.1250                 0.67       0.025101         0.015757               100                  0.62                          0.00
+    21    20 100            0.07000               0.1250                 0.54       0.009093         0.013606               100                  0.64                          0.02
+    25    17 100            0.06375               0.1250                 0.53       0.019055         0.012829               100                  0.61                          0.00
+
+Patch errors:
+0

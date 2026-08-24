@@ -33,35 +33,45 @@ DATASET_DIR = os.path.join(
 DATASET_DIR = os.path.abspath(DATASET_DIR)
 
 
+DATASET_DIR_MINIMAL = os.path.join(
+    SCRIPT_DIR,
+    "..",
+    "search-dataset",
+    "minimal_pair_swap_dataset",
+)
+
+DATASET_DIR_MINIMAL = os.path.abspath(DATASET_DIR_MINIMAL)
+
+
+
 def parse_filename(filename):
+    # Match Minimal Pair Swap: pair_000_original.png or pair_000_counterfactual_swap.png
+    mp_match = re.match(r"pair_(\d+)_(original|counterfactual_swap)\.png", filename)
+    if mp_match:
+        return {
+            "condition": mp_match.group(2),
+            "num_distractors": 0,
+            "trial": int(mp_match.group(1)),
+            "target_present": False,  # never present in MP_S
+        }
 
-    pattern = (
-        r"(disjunctive|conjunctive)"
-        r"_distractors_(\d+)"
-        r"_trial_(\d+)"
-        r"_target_(true|false)\.png"
+    # Match Visual Search: disjunctive_distractors_0_trial_000_target_true.png
+    vs_match = re.match(
+        r"(disjunctive|conjunctive|disjunctive_T)_distractors_(\d+)_trial_(\d+)_target_(true|false)\.png",
+        filename,
     )
+    if vs_match:
+        return {
+            "condition": vs_match.group(1),
+            "num_distractors": int(vs_match.group(2)),
+            "trial": int(vs_match.group(3)),
+            "target_present": vs_match.group(4) == "true",
+        }
 
-    match = re.match(pattern, filename)
-
-    if match is None:
-        raise ValueError(f"Could not parse: {filename}")
-
-    condition = match.group(1)
-    num_distractors = int(match.group(2))
-    trial = int(match.group(3))
-    target_present = match.group(4) == "true"
-
-    return {
-        "condition": condition,
-        "num_distractors": num_distractors,
-        "trial": trial,
-        "target_present": target_present,
-    }
+    raise ValueError(f"Could not parse filename: {filename}")
 
 
 def load_target_metadata(image_path):
-
     json_path = image_path.replace(".png", ".json")
 
     if not os.path.exists(json_path):
@@ -73,19 +83,26 @@ def load_target_metadata(image_path):
     with open(json_path, "r") as f:
         meta = json.load(f)
 
+    objects = meta.get("objects", [])
+
+    # Check for target role if present (VS_CF dataset)
     target_objects = [
-        obj for obj in meta["objects"]
-        if obj["role"] == "target"
+        obj for obj in objects
+        if obj.get("role") == "target"
     ]
 
+    # If no target role exists (e.g. MP_S dataset), fallback to the first object
     if len(target_objects) == 0:
-        return {
-            "target_x": None,
-            "target_y": None,
-        }
+        if len(objects) > 0:
+            target = objects[0]
+        else:
+            return {
+                "target_x": None,
+                "target_y": None,
+            }
+    else:
+        target = target_objects[0]
 
-    target = target_objects[0]
-    target = target_objects[0]
     x, y = target["position_plot"]
 
     return {
@@ -126,10 +143,20 @@ def main(args):
 
     image_paths = []
 
-    for condition in ["disjunctive", "conjunctive"]:
+    if args.dataset == "VS_CF":
+        final_DS = DATASET_DIR
+        condition_list = args.conditions
+    elif args.dataset == "MP_S":
+        final_DS = DATASET_DIR_MINIMAL
+        condition_list = [""]
+    else:
+        raise ValueError(f"{args.dataset} is an invalid dataset. Please choose VS_CF (visual search coutnerfacts) or MP_S (minimal pairs!")
+
+
+    for condition in condition_list:
 
         condition_dir = os.path.join(
-            DATASET_DIR,
+            final_DS,
             condition,
         )
 
@@ -250,15 +277,15 @@ def main(args):
     print("\nSaved:")
     print(args.out_path)
 
+    # Dynamic grouping depending on dataset
+    groupby_cols = (
+        ["condition", "num_distractors"]
+        if args.dataset == "VS_CF"
+        else ["condition"]
+    )
 
     summary = (
-        df
-        .groupby(
-            [
-                "condition",
-                "num_distractors",
-            ]
-        )["correct"]
+        df.groupby(groupby_cols)["correct"]
         .mean()
         .reset_index()
     )
@@ -299,10 +326,21 @@ if __name__ == "__main__":
     parser.add_argument(
         "--prompt_type",
         type=str,
-        default="regular",
+        default="binary",
     )
 
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        default="VS_CF", #"VS_CF" == conjunctive/dijunctive coutnerfacutals, "MP_S" == minimal_pair_swap
+    )
 
+    parser.add_argument(
+        "--conditions",
+        nargs="+",
+        default=["disjunctive", "conjunctive", "disjunctive_T"],
+        help="Conditions to benchmark for VS_CF (e.g. --conditions disjunctive_T or --conditions disjunctive conjunctive disjunctive_T)",
+    )
     args = parser.parse_args()
 
     main(args)

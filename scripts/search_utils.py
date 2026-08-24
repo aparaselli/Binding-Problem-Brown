@@ -61,11 +61,7 @@ Enclose your final answer in square brackets, as shown.
 
 
 PROMPT_BINARY = """
-You are presented with an image containing letters.
-
-Is there a green letter L in the image?
-
-Answer with exactly one word:
+Answer the following question with exactly one word:
 
 True
 
@@ -74,6 +70,11 @@ or
 False
 
 Do not provide any explanation.
+
+Question:
+You are presented with an image containing letters.
+
+Is there a green letter L in the image?
 """.strip()
 
 
@@ -226,7 +227,7 @@ def build_inputs(
         text = processor.apply_chat_template(
             messages,
             tokenize=False,
-            add_generation_prompt=False,
+            continue_final_message=True
         )
 
     inputs = processor(
